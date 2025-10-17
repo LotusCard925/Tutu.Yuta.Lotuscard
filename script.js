@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // パフォーマンス最適化のための遅延読み込み
     initLazyLoading();
+    
+    // タッチデバイス対応の初期化
+    initTouchSupport();
+    
+    // レスポンシブ対応の初期化
+    initResponsiveSupport();
 });
 
 // アニメーション効果の初期化
@@ -286,9 +292,102 @@ function debounce(func, wait) {
     };
 }
 
+// タッチデバイス対応の初期化
+function initTouchSupport() {
+    // タッチイベントの最適化
+    const touchElements = document.querySelectorAll('.social-link, .btn-primary, .btn-secondary');
+    
+    touchElements.forEach(element => {
+        // タッチ開始時のフィードバック
+        element.addEventListener('touchstart', function(e) {
+            this.style.transform = 'scale(0.98)';
+            this.style.transition = 'transform 0.1s ease';
+        }, { passive: true });
+        
+        // タッチ終了時のリセット
+        element.addEventListener('touchend', function(e) {
+            this.style.transform = 'scale(1)';
+        }, { passive: true });
+        
+        // タッチキャンセル時のリセット
+        element.addEventListener('touchcancel', function(e) {
+            this.style.transform = 'scale(1)';
+        }, { passive: true });
+    });
+    
+    // ダブルタップズームの無効化（必要に応じて）
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+}
+
+// レスポンシブ対応の初期化
+function initResponsiveSupport() {
+    // 画面サイズ変更時の処理
+    const handleResize = debounce(() => {
+        // 画面サイズに応じた処理
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        // モバイル判定
+        const isMobile = width <= 768;
+        const isTablet = width > 768 && width <= 1024;
+        const isDesktop = width > 1024;
+        
+        // デバイスに応じた最適化
+        if (isMobile) {
+            // モバイル用の最適化
+            document.body.classList.add('mobile-device');
+            document.body.classList.remove('tablet-device', 'desktop-device');
+        } else if (isTablet) {
+            // タブレット用の最適化
+            document.body.classList.add('tablet-device');
+            document.body.classList.remove('mobile-device', 'desktop-device');
+        } else if (isDesktop) {
+            // デスクトップ用の最適化
+            document.body.classList.add('desktop-device');
+            document.body.classList.remove('mobile-device', 'tablet-device');
+        }
+        
+        // 縦横比の調整
+        if (height < width) {
+            document.body.classList.add('landscape');
+            document.body.classList.remove('portrait');
+        } else {
+            document.body.classList.add('portrait');
+            document.body.classList.remove('landscape');
+        }
+    }, 100);
+    
+    // 初期実行
+    handleResize();
+    
+    // リサイズイベント
+    window.addEventListener('resize', handleResize);
+    
+    // オリエンテーション変更イベント
+    window.addEventListener('orientationchange', () => {
+        setTimeout(handleResize, 100);
+    });
+}
+
 // スクロールイベントの最適化
 const optimizedScrollHandler = debounce(() => {
     // スクロール時の処理（必要に応じて追加）
+    const scrollY = window.scrollY;
+    const windowHeight = window.innerHeight;
+    
+    // スクロール位置に応じた処理
+    if (scrollY > windowHeight * 0.5) {
+        document.body.classList.add('scrolled');
+    } else {
+        document.body.classList.remove('scrolled');
+    }
 }, 100);
 
 window.addEventListener('scroll', optimizedScrollHandler);
