@@ -139,10 +139,11 @@ body {
     border-radius: 50%;
     border: 3px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
+    transform: rotate(90deg);
 }
 
 .profile-image:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) rotate(90deg);
     border-color: rgba(255, 255, 255, 0.4);
 }
 
