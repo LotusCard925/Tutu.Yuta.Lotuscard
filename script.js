@@ -17,6 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // レスポンシブ対応の初期化
     initResponsiveSupport();
+    
+    // スワイプナビゲーションの初期化
+    initSwipeNavigation();
+    
+    // 振動フィードバックの初期化
+    initVibrationFeedback();
+    
+    // バックグラウンド更新の初期化
+    initBackgroundUpdate();
 });
 
 // アニメーション効果の初期化
@@ -410,3 +419,254 @@ const optimizedScrollHandler = debounce(() => {
 }, 100);
 
 window.addEventListener('scroll', optimizedScrollHandler);
+
+// スワイプナビゲーションの初期化
+function initSwipeNavigation() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    const tabContent = document.querySelector('.tab-content');
+    
+    if (!tabContent) return;
+    
+    let startX = 0;
+    let startY = 0;
+    let currentTabIndex = 0;
+    
+    // タブの順序を定義
+    const tabOrder = ['about', 'activities', 'achievements'];
+    
+    tabContent.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    tabContent.addEventListener('touchend', function(e) {
+        if (!startX || !startY) return;
+        
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        
+        const diffX = startX - endX;
+        const diffY = startY - endY;
+        
+        // 水平スワイプが垂直スワイプより大きい場合のみ処理
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+            if (diffX > 0) {
+                // 左スワイプ - 次のタブ
+                currentTabIndex = Math.min(currentTabIndex + 1, tabOrder.length - 1);
+            } else {
+                // 右スワイプ - 前のタブ
+                currentTabIndex = Math.max(currentTabIndex - 1, 0);
+            }
+            
+            // タブを切り替え
+            switchToTab(tabOrder[currentTabIndex]);
+        }
+        
+        startX = 0;
+        startY = 0;
+    }, { passive: true });
+}
+
+// タブ切り替え関数
+function switchToTab(tabId) {
+    // 全てのタブボタンからactiveクラスを削除
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 全てのタブパネルを非表示
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // 対応するタブボタンにactiveクラスを追加
+    const targetButton = document.querySelector(`[onclick="showTab('${tabId}')"]`);
+    if (targetButton) {
+        targetButton.classList.add('active');
+    }
+    
+    // 対応するタブパネルを表示
+    const targetPanel = document.getElementById(tabId);
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
+}
+
+// 振動フィードバックの初期化
+function initVibrationFeedback() {
+    // 振動がサポートされているかチェック
+    if (!navigator.vibrate) return;
+    
+    // ボタンに振動フィードバックを追加
+    const buttons = document.querySelectorAll('button, .social-link, .tag');
+    
+    buttons.forEach(button => {
+        button.addEventListener('touchstart', function() {
+            // 短い振動（50ms）
+            navigator.vibrate(50);
+        }, { passive: true });
+        
+        button.addEventListener('click', function() {
+            // クリック時の振動（100ms）
+            navigator.vibrate(100);
+        });
+    });
+}
+
+// バックグラウンド更新の初期化
+function initBackgroundUpdate() {
+    // Service Workerがサポートされているかチェック
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+            console.log('Service Worker registration failed:', err);
+        });
+    }
+    
+    // 定期的なデータ更新（5分ごと）
+    setInterval(updateData, 5 * 60 * 1000);
+    
+    // ページがフォーカスされた時の更新
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            updateData();
+        }
+    });
+}
+
+// データ更新関数
+function updateData() {
+    // 現在時刻の更新
+    const now = new Date();
+    console.log('Data updated at:', now.toLocaleString());
+    
+    // 必要に応じて他のデータも更新
+    // 例: ソーシャルメディアの最新情報、訪問者数など
+}
+
+// 編集モードの切り替え
+function toggleEditMode() {
+    const editButton = document.querySelector('.btn-edit');
+    const isEditMode = editButton.textContent.includes('編集モード');
+    
+    if (isEditMode) {
+        // 編集モードを有効にする
+        enableEditMode();
+        editButton.innerHTML = '<i class="fas fa-save"></i> 保存';
+    } else {
+        // 編集を保存する
+        saveChanges();
+        editButton.innerHTML = '<i class="fas fa-edit"></i> 編集モード';
+    }
+}
+
+// 編集モードを有効にする
+function enableEditMode() {
+    // 編集可能な要素を特定
+    const editableElements = [
+        { selector: '.profile-name', type: 'text' },
+        { selector: '.title', type: 'text' },
+        { selector: '.subtitle', type: 'text' },
+        { selector: '#about p', type: 'textarea' }
+    ];
+    
+    editableElements.forEach(element => {
+        const el = document.querySelector(element.selector);
+        if (el) {
+            el.contentEditable = true;
+            el.style.border = '2px dashed #ff6b35';
+            el.style.padding = '5px';
+            el.style.borderRadius = '5px';
+        }
+    });
+    
+    // 編集モードの説明を表示
+    showEditInstructions();
+}
+
+// 変更を保存する
+function saveChanges() {
+    const changes = {};
+    
+    // 変更された内容を収集
+    const profileName = document.querySelector('.profile-name').textContent;
+    const title = document.querySelector('.title').textContent;
+    const subtitle = document.querySelector('.subtitle').textContent;
+    
+    changes.profileName = profileName;
+    changes.title = title;
+    changes.subtitle = subtitle;
+    
+    // ローカルストレージに保存
+    localStorage.setItem('profileChanges', JSON.stringify(changes));
+    
+    // 編集モードを無効にする
+    disableEditMode();
+    
+    // 保存完了の通知
+    showSaveNotification();
+}
+
+// 編集モードを無効にする
+function disableEditMode() {
+    const editableElements = document.querySelectorAll('[contenteditable="true"]');
+    editableElements.forEach(el => {
+        el.contentEditable = false;
+        el.style.border = 'none';
+        el.style.padding = '0';
+    });
+}
+
+// 編集説明を表示
+function showEditInstructions() {
+    const instructions = document.createElement('div');
+    instructions.id = 'edit-instructions';
+    instructions.innerHTML = `
+        <div style="position: fixed; top: 20px; right: 20px; background: rgba(255, 107, 53, 0.9); color: white; padding: 15px; border-radius: 10px; z-index: 1000; max-width: 300px;">
+            <h4>編集モード</h4>
+            <p>• オレンジの枠線の要素をクリックして編集</p>
+            <p>• 変更後は「保存」ボタンをクリック</p>
+            <p>• 編集をキャンセルする場合はページを再読み込み</p>
+        </div>
+    `;
+    document.body.appendChild(instructions);
+}
+
+// 保存完了通知を表示
+function showSaveNotification() {
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+        <div style="position: fixed; top: 20px; right: 20px; background: #4CAF50; color: white; padding: 15px; border-radius: 10px; z-index: 1000;">
+            <i class="fas fa-check"></i> 変更が保存されました！
+        </div>
+    `;
+    document.body.appendChild(notification);
+    
+    // 3秒後に通知を削除
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// 管理者認証（簡単なパスワード認証）
+function authenticateAdmin() {
+    const password = prompt('管理者パスワードを入力してください:');
+    if (password === 'admin123') { // 実際の運用ではより安全な認証を使用
+        document.querySelector('.btn-edit').style.display = 'block';
+        return true;
+    } else {
+        alert('パスワードが正しくありません');
+        return false;
+    }
+}
+
+// ページ読み込み時に編集ボタンを表示するかチェック
+document.addEventListener('DOMContentLoaded', function() {
+    // URLパラメータで編集モードをチェック
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('edit') === 'true') {
+        if (authenticateAdmin()) {
+            // 認証成功時のみ編集ボタンを表示
+        }
+    }
+});
