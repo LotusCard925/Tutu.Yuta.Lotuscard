@@ -123,6 +123,21 @@ body {
     border-radius: 50%;
 }
 
+/* プロフィール画像のスタイル */
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
 .profile-name {
     font-size: 24px;
     font-weight: 700;
@@ -322,6 +337,10 @@ body {
         height: 30px;
     }
     
+    .profile-image {
+        border-width: 2px;
+    }
+    
     .profile-name {
         font-size: 20px;
     }
@@ -412,6 +431,10 @@ body {
         height: 45px;
     }
     
+    .profile-image {
+        border-width: 3px;
+    }
+    
     .profile-name {
         font-size: 26px;
     }
@@ -467,6 +490,10 @@ body {
     .logo-pattern {
         width: 50px;
         height: 50px;
+    }
+    
+    .profile-image {
+        border-width: 4px;
     }
     
     .profile-name {
@@ -543,6 +570,10 @@ body {
     .logo-pattern {
         width: 60px;
         height: 60px;
+    }
+    
+    .profile-image {
+        border-width: 5px;
     }
     
     .profile-name {
@@ -637,6 +668,10 @@ body {
     .logo-pattern {
         width: 25px;
         height: 25px;
+    }
+    
+    .profile-image {
+        border-width: 2px;
     }
     
     .title {
