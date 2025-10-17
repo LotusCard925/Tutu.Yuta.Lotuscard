@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="LotusCard">
-    <title>LotusCard - プロフィール</title>
+    <title>堤祐太 - プロフィール</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,91 +32,150 @@
                 <div class="logo-circle">
                     <img src="IMG_2688 - 24_0064 堤（Tsutsumi）.jpeg" alt="LotusCard Profile" class="profile-image">
                 </div>
-                <div class="profile-name">LotusCard</div>
+                <div class="profile-name">堤祐太</div>
             </div>
 
-            <div class="title">VS</div>
+            <div class="title">近畿大学</div>
+            <div class="subtitle">経営学部キャリアマネジメント学科</div>
 
             <!-- タグ -->
             <div class="tags">
-                <span class="tag">Creative</span>
-                <span class="tag">Developer</span>
-                <span class="tag">Designer</span>
-                <span class="tag">Innovator</span>
+                <span class="tag">舞台観劇</span>
+                <span class="tag">読書</span>
+                <span class="tag">ギター</span>
+                <span class="tag">よさこい</span>
+                <span class="tag">和太鼓</span>
+                <span class="tag">お笑い</span>
             </div>
 
             <!-- アクションボタン -->
             <div class="action-buttons">
-                <button class="btn-primary">
-                    <i class="fas fa-exchange-alt"></i>
-                    Exchange Contact
+                <button class="btn-primary" onclick="showContactInfo()">
+                    <i class="fas fa-phone"></i>
+                    連絡先交換
                 </button>
-                <button class="btn-secondary">
+                <button class="btn-secondary" onclick="downloadContact()">
                     <i class="fas fa-download"></i>
                 </button>
             </div>
 
+            <!-- タブセクション -->
+            <div class="tab-section">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('about')">自己紹介</button>
+                    <button class="tab-btn" onclick="showTab('activities')">活動</button>
+                    <button class="tab-btn" onclick="showTab('achievements')">実績</button>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="about" class="tab-panel active">
+                        <h3>自己紹介</h3>
+                        <p>・趣味（舞台観劇、読書、人とおしゃべり、ギター、お笑い、古着屋巡りetc）</p>
+                        <p>・全く人見知りしないのが長所です</p>
+                        <p>・あと飲み会が好きです</p>
+                        <p>・あと高校時代に所属していた和太鼓部で全国大会優勝して、国立劇場で天皇の前で演奏したことがあります。</p>
+                    </div>
+                    
+                    <div id="activities" class="tab-panel">
+                        <h3>活動・所属</h3>
+                        <div class="activity-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <h4>学生団体ツナグ</h4>
+                                <p>運営メンバー</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-handshake"></i>
+                            <div>
+                                <h4>学生コミュニティHANZEON</h4>
+                                <p>運営メンバー</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-music"></i>
+                            <div>
+                                <h4>よさこい社会人チーム『嘉們』</h4>
+                                <p>正規メンバー</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-laugh"></i>
+                            <div>
+                                <h4>大阪教育大学お笑いサークル『シャイニング・レア』</h4>
+                                <p>所属メンバー</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="achievements" class="tab-panel">
+                        <h3>実績・受賞歴</h3>
+                        <div class="achievement-item">
+                            <i class="fas fa-trophy"></i>
+                            <div>
+                                <h4>和太鼓全国大会優勝</h4>
+                                <p>高校時代に所属していた和太鼓部で全国大会優勝</p>
+                            </div>
+                        </div>
+                        <div class="achievement-item">
+                            <i class="fas fa-crown"></i>
+                            <div>
+                                <h4>国立劇場での演奏</h4>
+                                <p>天皇陛下の前で演奏する栄誉</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ソーシャルメディアリンク -->
             <div class="social-links">
-                <a href="https://github.com/LotusCard925" class="social-link" target="_blank">
-                    <div class="social-icon github">
-                        <i class="fab fa-github"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">GitHub</div>
-                        <div class="social-handle">github.com/LotusCard925</div>
-                    </div>
-                    <div class="social-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </a>
-
-                <a href="https://twitter.com/LotusCard925" class="social-link" target="_blank">
-                    <div class="social-icon twitter">
-                        <i class="fab fa-twitter"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">Twitter</div>
-                        <div class="social-handle">@LotusCard925</div>
-                    </div>
-                    <div class="social-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </a>
-
-                <a href="https://linkedin.com/in/lotuscard" class="social-link" target="_blank">
-                    <div class="social-icon linkedin">
-                        <i class="fab fa-linkedin"></i>
-                    </div>
-                    <div class="social-info">
-                        <div class="social-name">LinkedIn</div>
-                        <div class="social-handle">linkedin.com/in/lotuscard</div>
-                    </div>
-                    <div class="social-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </a>
-
-                <a href="https://instagram.com/lotuscard" class="social-link" target="_blank">
+                <a href="https://www.instagram.com/yuta223_6767" class="social-link" target="_blank">
                     <div class="social-icon instagram">
                         <i class="fab fa-instagram"></i>
                     </div>
                     <div class="social-info">
                         <div class="social-name">Instagram</div>
-                        <div class="social-handle">instagram.com/lotuscard</div>
+                        <div class="social-handle">@yuta223_6767</div>
                     </div>
                     <div class="social-arrow">
                         <i class="fas fa-chevron-right"></i>
                     </div>
                 </a>
 
-                <a href="mailto:lotuscard@example.com" class="social-link">
+                <a href="mailto:yu_ta20051021@icloud.com" class="social-link">
                     <div class="social-icon email">
                         <i class="fas fa-envelope"></i>
                     </div>
                     <div class="social-info">
                         <div class="social-name">Email</div>
-                        <div class="social-handle">lotuscard@example.com</div>
+                        <div class="social-handle">yu_ta20051021@icloud.com</div>
+                    </div>
+                    <div class="social-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="tel:08097352005" class="social-link">
+                    <div class="social-icon phone">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">Phone</div>
+                        <div class="social-handle">080-9735-2005</div>
+                    </div>
+                    <div class="social-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="https://twitter.com/tsutsumiyuta20051021" class="social-link" target="_blank">
+                    <div class="social-icon twitter">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                    <div class="social-info">
+                        <div class="social-name">Twitter</div>
+                        <div class="social-handle">@tsutsumiyuta20051021</div>
                     </div>
                     <div class="social-arrow">
                         <i class="fas fa-chevron-right"></i>

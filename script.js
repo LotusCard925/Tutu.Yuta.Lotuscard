@@ -108,19 +108,17 @@ function initSocialLinks() {
     });
 }
 
-// 連絡先交換モーダル表示
-function showContactModal() {
-    // シンプルなアラートで代替（実際のプロジェクトではモーダルコンポーネントを使用）
+// 連絡先情報表示
+function showContactInfo() {
     const contactInfo = `
 連絡先情報:
-📧 Email: lotuscard@example.com
-🐙 GitHub: github.com/LotusCard925
-🐦 Twitter: @LotusCard925
-💼 LinkedIn: linkedin.com/in/lotuscard
+📧 Email: yu_ta20051021@icloud.com
+📱 Phone: 080-9735-2005
+📷 Instagram: @yuta223_6767
+🐦 Twitter: @tsutsumiyuta20051021
     `.trim();
     
-    // より良いUXのためにカスタムモーダルを作成
-    createCustomModal('連絡先情報', contactInfo);
+    createCustomModal('堤祐太 - 連絡先情報', contactInfo);
 }
 
 // カスタムモーダル作成
@@ -201,12 +199,14 @@ function downloadContact() {
     // vCard形式の連絡先情報を作成
     const vCardData = `BEGIN:VCARD
 VERSION:3.0
-FN:LotusCard
-ORG:LotusCard
-EMAIL:lotuscard@example.com
-URL:https://github.com/LotusCard925
-URL:https://twitter.com/LotusCard925
-URL:https://linkedin.com/in/lotuscard
+FN:堤祐太
+ORG:近畿大学
+TITLE:経営学部キャリアマネジメント学科
+EMAIL:yu_ta20051021@icloud.com
+TEL:08097352005
+URL:https://www.instagram.com/yuta223_6767
+URL:https://twitter.com/tsutsumiyuta20051021
+NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『嘉們』正規メンバー、和太鼓全国大会優勝
 END:VCARD`;
 
     // Blobオブジェクトを作成してダウンロード
@@ -215,7 +215,7 @@ END:VCARD`;
     
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'LotusCard.vcf';
+    link.download = '堤祐太.vcf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -224,7 +224,26 @@ END:VCARD`;
     window.URL.revokeObjectURL(url);
     
     // 成功メッセージ
-    showToast('連絡先がダウンロードされました！');
+    showToast('堤祐太の連絡先がダウンロードされました！');
+}
+
+// タブ切り替え機能
+function showTab(tabId) {
+    // 全てのタブボタンからactiveクラスを削除
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 全てのタブパネルを非表示
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // クリックされたタブボタンにactiveクラスを追加
+    event.target.classList.add('active');
+    
+    // 対応するタブパネルを表示
+    document.getElementById(tabId).classList.add('active');
 }
 
 // トースト通知表示
