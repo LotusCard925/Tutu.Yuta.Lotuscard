@@ -294,6 +294,10 @@ body {
     background: #1da1f2;
 }
 
+.social-icon.line {
+    background: #00c300;
+}
+
 .social-icon.linkedin {
     background: #0077b5;
 }

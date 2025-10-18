@@ -124,7 +124,7 @@ function showContactInfo() {
 📧 Email: yu_ta20051021@icloud.com
 📱 Phone: 080-9735-2005
 📷 Instagram: @yuta223_6767
-🐦 Twitter: @tsutsumiyuta20051021
+💬 LINE: @tsutsumiyuta20051021
     `.trim();
     
     createCustomModal('堤祐太 - 連絡先情報', contactInfo);
@@ -214,7 +214,7 @@ TITLE:経営学部キャリアマネジメント学科
 EMAIL:yu_ta20051021@icloud.com
 TEL:08097352005
 URL:https://www.instagram.com/yuta223_6767
-URL:https://twitter.com/tsutsumiyuta20051021
+URL:https://line.me/ti/p/tsutsumiyuta20051021
 NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『嘉們』正規メンバー、和太鼓全国大会優勝
 END:VCARD`;
 
@@ -600,11 +600,136 @@ function saveChanges() {
     // ローカルストレージに保存
     localStorage.setItem('profileChanges', JSON.stringify(changes));
     
+    // 実際のHTMLファイルを更新
+    updateHTMLFile(changes);
+    
     // 編集モードを無効にする
     disableEditMode();
     
     // 保存完了の通知
     showSaveNotification();
+}
+
+// HTMLファイルを実際に更新する
+async function updateHTMLFile(changes) {
+    try {
+        // 現在のHTMLを取得
+        const response = await fetch('index.html');
+        let htmlContent = await response.text();
+        
+        // 変更を適用
+        if (changes.profileName) {
+            htmlContent = htmlContent.replace(
+                /<div class="profile-name">.*?<\/div>/,
+                `<div class="profile-name">${changes.profileName}</div>`
+            );
+        }
+        
+        if (changes.title) {
+            htmlContent = htmlContent.replace(
+                /<div class="title">.*?<\/div>/,
+                `<div class="title">${changes.title}</div>`
+            );
+        }
+        
+        if (changes.subtitle) {
+            htmlContent = htmlContent.replace(
+                /<div class="subtitle">.*?<\/div>/,
+                `<div class="subtitle">${changes.subtitle}</div>`
+            );
+        }
+        
+        // 更新されたHTMLをサーバーに送信
+        await fetch('/api/update-html', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                content: htmlContent,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        console.log('HTMLファイルが更新されました');
+        
+    } catch (error) {
+        console.error('HTML更新エラー:', error);
+        showUpdateErrorNotification();
+    }
+}
+
+// GitHubに変更をプッシュする
+async function pushChangesToGitHub(changes) {
+    try {
+        // GitHub APIを使用してファイルを更新
+        const response = await fetch('/api/update-profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                changes: changes,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        if (response.ok) {
+            console.log('変更がGitHubにプッシュされました');
+            showPushNotification();
+        } else {
+            console.error('プッシュに失敗しました');
+            showPushErrorNotification();
+        }
+    } catch (error) {
+        console.error('エラー:', error);
+        showPushErrorNotification();
+    }
+}
+
+// プッシュ成功通知
+function showPushNotification() {
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+        <div style="position: fixed; top: 80px; right: 20px; background: #2196F3; color: white; padding: 15px; border-radius: 10px; z-index: 1000;">
+            <i class="fas fa-cloud-upload-alt"></i> GitHubにプッシュされました！
+        </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+// プッシュエラー通知
+function showPushErrorNotification() {
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+        <div style="position: fixed; top: 80px; right: 20px; background: #f44336; color: white; padding: 15px; border-radius: 10px; z-index: 1000;">
+            <i class="fas fa-exclamation-triangle"></i> プッシュに失敗しました。手動でプッシュしてください。
+        </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+// 更新エラー通知
+function showUpdateErrorNotification() {
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+        <div style="position: fixed; top: 80px; right: 20px; background: #ff9800; color: white; padding: 15px; border-radius: 10px; z-index: 1000;">
+            <i class="fas fa-exclamation-triangle"></i> ファイル更新に失敗しました。手動でファイルを編集してください。
+        </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }
 
 // 編集モードを無効にする
