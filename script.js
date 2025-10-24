@@ -206,12 +206,17 @@ function createCustomModal(title, content) {
 // 連絡先ダウンロード機能
 async function downloadContact() {
     try {
-        // プロフィール画像をBase64エンコード
+        // プロフィール画像をBase64エンコード（エラー時は写真なしで続行）
         const profileImage = document.querySelector('.profile-image');
         let photoData = '';
         
         if (profileImage) {
-            photoData = await getImageAsBase64(profileImage.src);
+            try {
+                photoData = await getImageAsBase64(profileImage.src);
+            } catch (imageError) {
+                console.warn('画像の読み込みに失敗しました。写真なしで続行します:', imageError);
+                photoData = '';
+            }
         }
         
         // vCard形式の連絡先情報を作成
@@ -261,41 +266,51 @@ NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『�
 function getImageAsBase64(imageSrc) {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = 'anonymous';
+        
+        // タイムアウトを設定（5秒）
+        const timeout = setTimeout(() => {
+            reject(new Error('画像の読み込みがタイムアウトしました'));
+        }, 5000);
         
         img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // 画像サイズを設定（連絡先用に適切なサイズにリサイズ）
-            const maxSize = 200;
-            let width = img.width;
-            let height = img.height;
-            
-            if (width > height) {
-                if (width > maxSize) {
-                    height = (height * maxSize) / width;
-                    width = maxSize;
+            clearTimeout(timeout);
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 画像サイズを設定（連絡先用に適切なサイズにリサイズ）
+                const maxSize = 200;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
                 }
-            } else {
-                if (height > maxSize) {
-                    width = (width * maxSize) / height;
-                    height = maxSize;
-                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 画像を描画
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Base64エンコード
+                const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                resolve(base64);
+            } catch (canvasError) {
+                reject(new Error('画像の処理に失敗しました: ' + canvasError.message));
             }
-            
-            canvas.width = width;
-            canvas.height = height;
-            
-            // 画像を描画
-            ctx.drawImage(img, 0, 0, width, height);
-            
-            // Base64エンコード
-            const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-            resolve(base64);
         };
         
         img.onerror = function() {
+            clearTimeout(timeout);
             reject(new Error('画像の読み込みに失敗しました'));
         };
         
