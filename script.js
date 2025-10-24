@@ -207,16 +207,14 @@ function createCustomModal(title, content) {
 async function downloadContact() {
     try {
         // プロフィール画像をBase64エンコード（エラー時は写真なしで続行）
-        const profileImage = document.querySelector('.profile-image');
         let photoData = '';
         
-        if (profileImage) {
-            try {
-                photoData = await getImageAsBase64(profileImage.src);
-            } catch (imageError) {
-                console.warn('画像の読み込みに失敗しました。写真なしで続行します:', imageError);
-                photoData = '';
-            }
+        try {
+            photoData = await getProfileImageData();
+            console.log('プロフィール画像を正常に取得しました');
+        } catch (imageError) {
+            console.warn('画像の読み込みに失敗しました。写真なしで続行します:', imageError);
+            photoData = '';
         }
         
         // vCard形式の連絡先情報を作成
@@ -267,10 +265,10 @@ function getImageAsBase64(imageSrc) {
     return new Promise((resolve, reject) => {
         const img = new Image();
         
-        // タイムアウトを設定（5秒）
+        // タイムアウトを設定（10秒に延長）
         const timeout = setTimeout(() => {
             reject(new Error('画像の読み込みがタイムアウトしました'));
-        }, 5000);
+        }, 10000);
         
         img.onload = function() {
             clearTimeout(timeout);
@@ -279,7 +277,7 @@ function getImageAsBase64(imageSrc) {
                 const ctx = canvas.getContext('2d');
                 
                 // 画像サイズを設定（連絡先用に適切なサイズにリサイズ）
-                const maxSize = 200;
+                const maxSize = 300; // サイズを少し大きくして画質向上
                 let width = img.width;
                 let height = img.height;
                 
@@ -301,8 +299,8 @@ function getImageAsBase64(imageSrc) {
                 // 画像を描画
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Base64エンコード
-                const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                // Base64エンコード（画質を向上）
+                const base64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
                 resolve(base64);
             } catch (canvasError) {
                 reject(new Error('画像の処理に失敗しました: ' + canvasError.message));
@@ -314,7 +312,39 @@ function getImageAsBase64(imageSrc) {
             reject(new Error('画像の読み込みに失敗しました'));
         };
         
+        // 画像の読み込みを開始
         img.src = imageSrc;
+    });
+}
+
+// プロフィール画像を直接取得する関数
+function getProfileImageData() {
+    return new Promise((resolve, reject) => {
+        const profileImage = document.querySelector('.profile-image');
+        
+        if (!profileImage) {
+            reject(new Error('プロフィール画像が見つかりません'));
+            return;
+        }
+        
+        // 画像が既に読み込まれているかチェック
+        if (profileImage.complete && profileImage.naturalHeight !== 0) {
+            // 既に読み込まれている場合
+            getImageAsBase64(profileImage.src)
+                .then(resolve)
+                .catch(reject);
+        } else {
+            // 読み込み待ちの場合
+            profileImage.onload = function() {
+                getImageAsBase64(profileImage.src)
+                    .then(resolve)
+                    .catch(reject);
+            };
+            
+            profileImage.onerror = function() {
+                reject(new Error('プロフィール画像の読み込みに失敗しました'));
+            };
+        }
     });
 }
 
