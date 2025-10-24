@@ -204,9 +204,18 @@ function createCustomModal(title, content) {
 }
 
 // 連絡先ダウンロード機能
-function downloadContact() {
-    // vCard形式の連絡先情報を作成
-    const vCardData = `BEGIN:VCARD
+async function downloadContact() {
+    try {
+        // プロフィール画像をBase64エンコード
+        const profileImage = document.querySelector('.profile-image');
+        let photoData = '';
+        
+        if (profileImage) {
+            photoData = await getImageAsBase64(profileImage.src);
+        }
+        
+        // vCard形式の連絡先情報を作成
+        let vCardData = `BEGIN:VCARD
 VERSION:3.0
 FN:堤祐太
 N:堤;祐太;;;
@@ -217,25 +226,81 @@ EMAIL:yu_ta20051021@icloud.com
 TEL:08097352005
 URL:https://www.instagram.com/yuta223_6767
 URL:https://line.me/ti/p/0F-wjF13ia
-NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『嘉們』正規メンバー、和太鼓全国大会優勝
-END:VCARD`;
+NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『嘉們』正規メンバー、和太鼓全国大会優勝`;
+        
+        // 写真データがある場合は追加
+        if (photoData) {
+            vCardData += `\nPHOTO;ENCODING=BASE64;TYPE=JPEG:${photoData}`;
+        }
+        
+        vCardData += '\nEND:VCARD';
 
-    // Blobオブジェクトを作成してダウンロード
-    const blob = new Blob([vCardData], { type: 'text/vcard' });
-    const url = window.URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = '堤祐太.vcf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // メモリリークを防ぐ
-    window.URL.revokeObjectURL(url);
-    
-    // 成功メッセージ
-    showToast('堤祐太の連絡先がダウンロードされました！');
+        // Blobオブジェクトを作成してダウンロード
+        const blob = new Blob([vCardData], { type: 'text/vcard' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = '堤祐太.vcf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // メモリリークを防ぐ
+        window.URL.revokeObjectURL(url);
+        
+        // 成功メッセージ
+        showToast('堤祐太の連絡先がダウンロードされました！');
+    } catch (error) {
+        console.error('連絡先ダウンロードエラー:', error);
+        showToast('連絡先のダウンロードに失敗しました。');
+    }
+}
+
+// 画像をBase64エンコードする関数
+function getImageAsBase64(imageSrc) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 画像サイズを設定（連絡先用に適切なサイズにリサイズ）
+            const maxSize = 200;
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > height) {
+                if (width > maxSize) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // 画像を描画
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Base64エンコード
+            const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            resolve(base64);
+        };
+        
+        img.onerror = function() {
+            reject(new Error('画像の読み込みに失敗しました'));
+        };
+        
+        img.src = imageSrc;
+    });
 }
 
 // タブ切り替え機能
