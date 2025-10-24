@@ -209,12 +209,14 @@ function downloadContact() {
     const vCardData = `BEGIN:VCARD
 VERSION:3.0
 FN:堤祐太
+N:堤;祐太;;;
+NICKNAME:堤祐太
 ORG:近畿大学
 TITLE:経営学部キャリアマネジメント学科
 EMAIL:yu_ta20051021@icloud.com
 TEL:08097352005
 URL:https://www.instagram.com/yuta223_6767
-URL:https://line.me/ti/p/tsutsumiyuta20051021
+URL:https://line.me/ti/p/@tsutsumiyuta20051021
 NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『嘉們』正規メンバー、和太鼓全国大会優勝
 END:VCARD`;
 
