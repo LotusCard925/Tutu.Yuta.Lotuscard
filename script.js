@@ -229,7 +229,7 @@ EMAIL:yu_ta20051021@icloud.com
 TEL:08097352005
 URL:https://www.instagram.com/yuta223_6767
 URL:https://line.me/ti/p/0F-wjF13ia
-NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『嘉們』正規メンバー、和太鼓全国大会優勝`;
+NOTE:学生団体ツナグ・HANZEON運営、よさこい社会人チーム『嘉們』正規メンバー、和太鼓全国大会優勝、第26回にっぽんど真ん中祭りどまつり大賞（内閣総理大臣賞）受賞、バイブスジャパンvol.5運営`;
         
         // 写真データがある場合は追加
         if (photoData) {
